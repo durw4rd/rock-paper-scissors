@@ -12,5 +12,4 @@ class GameListItemComponent extends React.Component {
   }
 }
 
-
 export default GameListItemComponent;

@@ -11,7 +11,6 @@ class GameModel extends BaseModel {
     };
   }
 
-
   constructor() {
     super('game');
   }
