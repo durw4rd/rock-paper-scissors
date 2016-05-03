@@ -1,5 +1,6 @@
 import React from 'react';
 import GameListItemComponent from './GameListItemComponent';
+import List from 'material-ui/lib/lists/list';
 
 class GameListComponent extends React.Component {
   selectGame(game) {
@@ -9,11 +10,11 @@ class GameListComponent extends React.Component {
   render() {
     let component = this;
     return (
-      <ul>
+      <List subheader="Recent games">
         {this.props.games.map(function(game) {
-          return (<GameListItemComponent key={game._id} game={game} onClick={component.selectGame.bind(component)}/>);
+          return (<GameListItemComponent key={game._id} game={game} currentPlayer={component.props.currentPlayer} onClick={component.selectGame.bind(component)}/>)
         })}
-      </ul>
+      </List>
     );
   }
 }

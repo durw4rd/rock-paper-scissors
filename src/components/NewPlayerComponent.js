@@ -14,7 +14,7 @@ class NewPlayerComponent extends React.Component {
       <div>
         <form onSubmit={this.createPlayer.bind(this)}>
           <div>
-            <label>Player Name:</label>
+            <label>Player Name: </label>
             <input type="text" ref="playerName" placeholder="What's your name?"/>
           </div>
           <div>
