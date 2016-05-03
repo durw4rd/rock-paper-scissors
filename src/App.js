@@ -5,26 +5,23 @@ import NewGameComponent from './components/NewGameComponent';
 import GameListComponent from './components/GameListComponent';
 import PlayerMoveComponent from './components/PlayerMoveComponent';
 import Utils from './lib/Utils';
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import Theme from './lib/Theme';
 import AppBar from 'material-ui/lib/app-bar';
-
-const AppBar = () => (
-  <AppBar
-    title="RSP 4 Life!"
-    iconClassNameRight="muidocs-icon-navigation-expand-more"
-  />
-);
+import RaisedButton from 'material-ui/lib/raised-button';
 
 const buttonStyle = {
   margin: 12,
 };
 
 const containerStyles = {
-  width: "500px",
-  height: "500px",
+  width: '80%',
+  height: "auto",
   margin: "auto",
 };
 
 const headerStyle = {
+  fontFamily: 'Roboto',
   textAlign: "center"
 };
 
@@ -38,6 +35,12 @@ const playerMoveStyle = {
   fontSize: "6em",
   color: "#999"
 };
+
+const h3Style = {
+  fontFamily: "Roboto",
+  fontSize: "26px",
+  color: "#333"
+}
 
 class App extends React.Component {
 
@@ -56,8 +59,13 @@ class App extends React.Component {
     this.state = {
       games: [],
       currentGame: null,
-      currentPlayer: playerStorage,
-      playerMove: ""
+      currentPlayer: playerStorage
+    };
+  }
+
+  getChildContext() {
+    return {
+      muiTheme: ThemeManager.getMuiTheme(Theme),
     };
   }
 
@@ -106,22 +114,8 @@ class App extends React.Component {
         currentGame: game
       });
     } else {
-      window.alert("Can't touch this dung dung dung dung");
+      window.alert("Way too late, boy.");
     }
-  }
-
-  containerStyles() {
-    return {
-      width: "500px",
-      height: "500px",
-      margin: "auto",
-    };
-  }
-
-  headerStyle() {
-    return {
-      textAlign: "center"
-    };
   }
 
   determineWinner() {
@@ -165,13 +159,12 @@ class App extends React.Component {
   }
 
   storeWinner(winner) {
-    if (this.state.currentGame.winner !== null) {
+    if (this.state.currentGame.winner === null) {
       this.games.save(this.state.currentGame, { winner: winner });
     }
   }
 
   makeMove(move) {
-    console.log(move);
     if (this.state.currentGame.playerOne === this.state.currentPlayer) {
       this.games.save(this.state.currentGame, { playerOneMove: move });
     }
@@ -179,10 +172,6 @@ class App extends React.Component {
     if (this.state.currentGame.playerTwo === this.state.currentPlayer) {
       this.games.save(this.state.currentGame, { playerTwoMove: move });
     }
-
-    this.setState({
-      playerMove: move
-    });
   }
 
   winningMove() {
@@ -205,6 +194,24 @@ class App extends React.Component {
     }
   }
 
+  yourMove() {
+    if (this.state.currentGame !== null) {
+      let currentPlayer = this.state.currentPlayer;
+      let playerOne = this.state.currentGame.playerOne;
+      let playerTwo = this.state.currentGame.playerTwo;
+
+      if (playerOne === currentPlayer) {
+        return this.state.currentGame.playerOneMove;
+      }
+
+      if (playerTwo === currentPlayer) {
+        return this.state.currentGame.playerTwoMove;
+      }
+    }
+
+    return "";
+  }
+
   winnerSentence() {
     if (this.state.currentGame.winner === "draw") {
       return `${this.winningMove()} draws ${this.losingMove()}`;
@@ -219,46 +226,62 @@ class App extends React.Component {
     });
   }
 
+  clearCurrentPlayer() {
+    this.setState({
+      currentPlayer: null
+    });
+  }
+
   render() {
     console.log(this.state);
     return (
-      <div style={this.containerStyles()}>
-        <h1 style={this.headerStyle()}>Rock Paper Scissors</h1>
-        { this.state.currentPlayer !== null &&
-          <p>Hi, {this.state.currentPlayer}</p> }
+      <div>
+        <AppBar title="RSP 4 Life!"/>
+        <div style={containerStyles}>
+          <h1 style={headerStyle}></h1>
+          { this.state.currentPlayer !== null && <div>
+            <h3 style={h3Style}>Hi, {this.state.currentPlayer}</h3>
+            <RaisedButton onClick={this.clearCurrentPlayer.bind(this)} label="Log Out" secondary={true} style={buttonStyle}/>
+            </div>
+             }
 
-        { this.state.currentPlayer === null &&
-          <NewPlayerComponent onCreate={this.setPlayer.bind(this)}/> }
+          { this.state.currentPlayer === null &&
+            <NewPlayerComponent onCreate={this.setPlayer.bind(this)}/> }
 
-        { this.state.currentGame === null &&
-          <GameListComponent games={this.state.games} currentPlayer={this.state.currentPlayer} onSelect={this.joinGame.bind(this)}/> }
+          { this.state.currentGame === null &&
+            <GameListComponent games={this.state.games} currentPlayer={this.state.currentPlayer} onSelect={this.joinGame.bind(this)}/> }
 
-        { this.state.currentPlayer && this.state.currentGame === null &&
-          <NewGameComponent onCreate={this.createGame.bind(this)}/> }
+          { this.state.currentPlayer && this.state.currentGame === null &&
+            <NewGameComponent onCreate={this.createGame.bind(this)}/> }
 
-        { this.state.currentGame !== null && <div className="game">
-          <p>Player one: {this.state.currentGame.playerOne}</p>
-          <p>Player two: {this.state.currentGame.playerTwo}</p>
+          { this.state.currentGame !== null && <div className="game">
+            <p>Player one: {this.state.currentGame.playerOne}</p>
+            <p>Player two: {this.state.currentGame.playerTwo}</p>
 
-          { this.state.currentGame.winner === null && <div>
-            <h2>{this.state.playerMove}</h2>
-            <PlayerMoveComponent move="Rock" onClick={this.makeMove.bind(this)} />
-            <PlayerMoveComponent move="Paper" onClick={this.makeMove.bind(this)} />
-            <PlayerMoveComponent move="Scissors" onClick={this.makeMove.bind(this)} />
-          </div> }
+            { this.state.currentGame.winner === null && <div style={playerMoveContainerStyle}>
+              <h2 style={playerMoveStyle}>&nbsp;{this.state.playerMove}</h2>
+              <PlayerMoveComponent move="Rock" onClick={this.makeMove.bind(this)} />
+              <PlayerMoveComponent move="Paper" onClick={this.makeMove.bind(this)} />
+              <PlayerMoveComponent move="Scissors" onClick={this.makeMove.bind(this)} />
+            </div> }
 
-          { this.state.currentGame.winner !== null && <div>
-            <h1>{this.state.currentGame.winner} won!</h1>
-            <p>{this.winnerSentence()}</p>
-          </div> }
+            { this.state.currentGame.winner !== null && <div>
+              <h1>{this.state.currentGame.winner} won!</h1>
+              <p>{this.winnerSentence()}</p>
+            </div> }
 
-          <div>
-            <button onClick={this.clearCurrentGame.bind(this)}>Back</button>
-          </div>
-        </div>}
+            <div style={headerStyle}>
+              <RaisedButton onClick={this.clearCurrentGame.bind(this)} label="Back" secondary={true} style={buttonStyle}/>
+            </div>
+          </div>}
+        </div>
       </div>
-    );
-  }
+        );
+    }
 }
+
+App.childContextTypes = {
+  muiTheme: React.PropTypes.object
+};
 
 export default App;

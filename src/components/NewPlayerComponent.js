@@ -1,4 +1,28 @@
 import React from 'react';
+import RaisedButton from 'material-ui/lib/raised-button';
+
+const buttonStyle = {
+ margin: 12,
+};
+
+const newPlayerStyle = {
+  background: "#999",
+  padding: "15px"
+}
+
+const pStyle = {
+  display: "inline",
+  fontFamily: "Roboto",
+  fontSize: "20px",
+  color: "#333"
+}
+
+const p2Style = {
+  fontFamily: "Roboto",
+  fontSize: "20px",
+  color: "#333",
+  padding: "2px"
+}
 
 class NewPlayerComponent extends React.Component {
   createPlayer(event) {
@@ -11,17 +35,13 @@ class NewPlayerComponent extends React.Component {
 
   render() {
     return(
-      <div>
-        <form onSubmit={this.createPlayer.bind(this)}>
-          <div>
-            <label>Player Name: </label>
-            <input type="text" ref="playerName" placeholder="What's your name?"/>
-          </div>
-          <div>
-            <input type="submit" value="Save"/>
-          </div>
-        </form>
-      </div>
+      <form style={newPlayerStyle}>
+        <div>
+          <p style={pStyle}>Player Name: </p>
+          <input style={p2Style} type="text" ref="playerName" placeholder=" What's your name?"/>
+          <RaisedButton onClick={this.createPlayer.bind(this)} label="Save" primary={true} style={buttonStyle} />
+        </div>
+      </form>
     );
   }
 }
